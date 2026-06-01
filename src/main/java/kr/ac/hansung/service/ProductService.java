@@ -14,7 +14,6 @@ import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -25,11 +24,13 @@ public class ProductService {
     }
 
     // 전체 목록 페이징 (Pageable → findAll에 그대로 전달)
+    @Transactional(readOnly = true)
     public Page<Product> getProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
 
     // 키워드 검색 + 페이징
+    @Transactional(readOnly = true)
     public Page<Product> searchProducts(String keyword, Pageable pageable) {
         return productRepository.findByNameContaining(keyword, pageable);
     }
@@ -38,6 +39,23 @@ public class ProductService {
     public Product findById(Long id) {
         return productRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다: " + id));
+    }
+
+    @Transactional
+    public Product updateProduct(Long id, ProductDto dto) {
+        // findById: DB에서 엔티티 조회 (없으면 예외)
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + id));
+
+        // 영속 상태(Managed) 엔티티 필드 변경
+        // → @Transactional 종료 시 더티 체킹(Dirty Checking)으로 자동 UPDATE
+        product.setName(dto.getName());
+        product.setPrice(dto.getPrice());
+        product.setStock(dto.getStock());
+        if (dto.getDescription() != null) {
+            product.setDescription(dto.getDescription());
+        }
+        return product;  // save() 불필요 — 더티 체킹으로 자동 저장
     }
 
     @Transactional
