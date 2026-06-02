@@ -28,7 +28,7 @@ public class UserController {
     @PostMapping("/user/password")
     public String changePassword(
             @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @ModelAttribute PasswordChangeDto dto,
+            @Valid @ModelAttribute("passwordChangeDto") PasswordChangeDto dto,
             BindingResult bindingResult,
             RedirectAttributes ra) {
 
