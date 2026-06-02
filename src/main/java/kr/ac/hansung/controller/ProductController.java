@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import kr.ac.hansung.entity.Product;
 import jakarta.validation.Valid;
-import kr.ac.hansung.entity.Product;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
